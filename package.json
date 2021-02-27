@@ -1,0 +1,37 @@
+{
+	"name": "@pucelle/sqlite",
+	"version": "1.0.0",
+	"description": "Have a worker wrapper for better-sqlite3, and also provide more quick APIs.",
+	"main": "out/index.js",
+	"types": "out/index.d.ts",
+	"scripts": {
+		"build": "tsc -b",
+		"watch": "tsc -b -w",
+		"prepublish": "npm run build"
+	},
+	"keywords": [
+		"node",
+		"worker",
+		"sqlite",
+		"sqlite3",
+		"typescript"
+	],
+	"author": "pucelle",
+	"license": "MIT",
+	"homepage": "https://github.com/pucelle/sqlite",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/pucelle/sqlite.git"
+	},
+	"bugs": {
+		"url": "https://github.com/pucelle/sqlite/issues"
+	},
+	"devDependencies": {
+		"@types/better-sqlite3": "^5.4.1",
+		"@types/node": "^12.20.4",
+		"typescript": "^3.9.5"
+	},
+	"dependencies": {
+		"better-sqlite3": "^7.1.2"
+	}
+}
