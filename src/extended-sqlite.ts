@@ -3,7 +3,13 @@ import * as sqlite3 from 'better-sqlite3'
 
 export class ExtendedSqlite extends sqlite3 {
 
-	all(sql: string, ...params: any[]): any {
+	constructor(filename: string, options?: sqlite3.Options) {
+		// Ugly polyfill, raw class interpolated returned result.
+		let result = super(filename, options) as any
+		result.__proto__ = ExtendedSqlite.prototype
+	}
+
+	all(sql: string, ...params: any[]): any[] {
 		return this.prepare(sql).all(...params)
 	}
 
