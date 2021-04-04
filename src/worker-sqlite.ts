@@ -123,6 +123,31 @@ export class WorkerSqlite {
 		return this.queue(SqliteMessageType.Exec, content)
 	}
 
+	format(sql: string, ...params: any[]): string {
+		let index = 0
+
+		return sql.replace(/'(?:(?:\\'|.)+?)'|\?/g, (m0) => {
+			if (m0 === '?') {
+				if (index > params.length) {
+					throw new Error(`More than ${params.length} placeholders specified.`)
+				}
+				
+				let param = params[index]
+				index++
+
+				if (typeof param === 'string') {
+					return `'${param.replace(/'/g, "\\'")}'`
+				}
+				else {
+					return String(param)
+				}
+			}
+			else {
+				return m0
+			}
+		})
+	}
+
 	async close(): Promise<void> {
 		await this.queue(SqliteMessageType.Close, null)
 
