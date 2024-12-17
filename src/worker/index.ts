@@ -1,13 +1,13 @@
-const sqlite3 = require('better-sqlite3')
-const {SqliteMessage, SqliteMessageType} = require('../out/types')
+import * as sqlite3 from 'better-sqlite3'
+import {SqliteMessage, SqliteMessageType} from '../types'
 
 
 const useWebWorker = typeof onmessage !== 'undefined'
 const parentPort = useWebWorker ? null : require('worker_threads').parentPort
-let db
+let db: sqlite3.Database
 
 
-function handleMessage({id, type, data}) {
+function handleMessage({id, type, data}: SqliteMessage) {
 	let result = null
 
 	switch (type) {

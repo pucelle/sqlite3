@@ -1,5 +1,5 @@
 import {Options, PragmaOptions} from 'better-sqlite3'
-import {SqliteMessage, SqliteMessageType, SqliteResult} from './types'
+import {SqliteMessage, SqliteMessageType, SqliteResult} from '../types'
 import type {Worker as NodeWorker} from 'worker_threads'
 
 // Reference to: https://github.com/JoshuaWise/better-sqlite3/blob/master/docs/api.md
@@ -29,7 +29,7 @@ export class WorkerSqlite {
 	 *  - options.verbose: provide a function that gets called with every SQL string executed by the database connection (default: null).
 	 */
 	constructor(filename: string, options: Options = {}) {
-		this.worker = new WebOrNodeWorker(__dirname + '/../worker/worker.js')
+		this.worker = new WebOrNodeWorker(__dirname + '/../worker/index.js')
 		this.queue(SqliteMessageType.Open, {filename, options})
 
 		if (typeof Worker !== 'undefined' && this.worker instanceof Worker) {

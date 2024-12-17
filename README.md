@@ -1,4 +1,4 @@
-# Worker Sqlite
+# Worker Sqlite3
 
 Provides a worker wrapper for `better-sqlite3`, and also provides convenient APIs like `run`, `all`, `get` for default synchronous mode sqlite class.
 
