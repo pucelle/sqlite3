@@ -8,7 +8,7 @@ Works both in electron and node environment.
 
 ## For electron usage?
 
-You should rebuild `better-sqlite3` by running `electron-rebuild --version [version] -f -w better-sqlite3`.
+You should rebuild `better-sqlite3` by running `electron-rebuild --version [ElectronVersion] -f -w better-sqlite3`.
 
 Don't forget to set `nodeIntegrationInWorker: true` in `webPreferences`.
 
