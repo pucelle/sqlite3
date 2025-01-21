@@ -1,9 +1,8 @@
 import * as sqlite3 from 'better-sqlite3'
 import {SqliteMessage, SqliteMessageType} from '../types'
+import {parentPort} from 'worker_threads'
 
 
-const useWebWorker = typeof onmessage !== 'undefined'
-const parentPort = useWebWorker ? null : require('worker_threads').parentPort
 let db: sqlite3.Database
 
 
