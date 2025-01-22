@@ -86,9 +86,7 @@ export class WorkerSqlite {
 		this.resolves = new Map()
 	}
 
-	private queue(type: SqliteMessageType, data: any): Promise<any> {
-		let id = ++this.seed
-
+	queue(type: SqliteMessageType, data: any, id = ++this.seed): Promise<any> {
 		let message: SqliteMessage = {
 			id,
 			type,
@@ -123,6 +121,17 @@ export class WorkerSqlite {
 		return this.queue(SqliteMessageType.Run, {sql, params})
 	}
 
+	/** 
+	 * Note, must delete after not use it any more.
+	 * Or prepared statement can't be GC in worker.
+	 */
+	prepare(sql: string) {
+		let id = ++this.seed
+		this.queue(SqliteMessageType.Prepare, sql, id)
+
+		return new WorkerSqlitePrepared(id, this)
+	}
+
 	exec(content: string): Promise<void> {
 		return this.queue(SqliteMessageType.Exec, content)
 	}
@@ -136,5 +145,47 @@ export class WorkerSqlite {
 		else {
 			await (this.worker as NodeWorker).terminate()
 		}
+	}
+}
+
+
+export class WorkerSqlitePrepared {
+
+	readonly id: number
+	readonly db: WorkerSqlite
+	private deleted: boolean = false
+
+	constructor(id: number, db: WorkerSqlite) {
+		this.id = id
+		this.db = db
+	}
+
+	all(...params: any[]): Promise<any> {
+		if (this.deleted) {
+			throw new Error(`Prepared statement has been deleted!`)
+		}
+
+		return this.db.queue(SqliteMessageType.PrepareAll, {id: this.id, params})
+	}
+
+	get(...params: any[]): Promise<any> {
+		if (this.deleted) {
+			throw new Error(`Prepared statement has been deleted!`)
+		}
+
+		return this.db.queue(SqliteMessageType.PrepareGet, {id: this.id, params})
+	}
+
+	run(...params: any[]): Promise<any> {
+		if (this.deleted) {
+			throw new Error(`Prepared statement has been deleted!`)
+		}
+
+		return this.db.queue(SqliteMessageType.PrepareRun, {id: this.id, params})
+	}
+
+	delete() {
+		this.db.queue(SqliteMessageType.PrepareDelete, {id: this.id})
+		this.deleted = true
 	}
 }

@@ -4,6 +4,7 @@ import {parentPort} from 'worker_threads'
 
 
 let db: sqlite3.Database
+let preparedMap: Map<number, sqlite3.Statement> = new Map()
 
 
 function handleMessage({id, type, data}: SqliteMessage) {
@@ -28,6 +29,35 @@ function handleMessage({id, type, data}: SqliteMessage) {
 
 		case SqliteMessageType.Run:
 			result = db.prepare(data.sql).run(...data.params)
+			break
+
+		case SqliteMessageType.Prepare:
+			preparedMap.set(data.id, db.prepare(data.sql))
+			break
+
+		case SqliteMessageType.PrepareAll:
+			var prepared = preparedMap.get(data.id)
+			if (prepared) {
+				result = prepared.all(...data.params)
+			}
+			break
+
+		case SqliteMessageType.PrepareGet:
+			var prepared = preparedMap.get(data.id)
+			if (prepared) {
+				result = prepared.get(...data.params)
+			}
+			break
+
+		case SqliteMessageType.PrepareRun:
+			var prepared = preparedMap.get(data.id)
+			if (prepared) {
+				result = prepared.run(...data.params)
+			}
+			break
+
+		case SqliteMessageType.PrepareDelete:
+			preparedMap.delete(data.id)
 			break
 
 		case SqliteMessageType.Exec:
