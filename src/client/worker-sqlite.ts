@@ -127,13 +127,13 @@ export class WorkerSqlite {
 	 */
 	prepare(sql: string) {
 		let id = ++this.seed
-		this.queue(SqliteMessageType.Prepare, sql, id)
+		this.queue(SqliteMessageType.Prepare, {sql}, id)
 
 		return new WorkerSqlitePrepared(id, this)
 	}
 
-	exec(content: string): Promise<void> {
-		return this.queue(SqliteMessageType.Exec, content)
+	exec(sql: string): Promise<void> {
+		return this.queue(SqliteMessageType.Exec, {sql})
 	}
 
 	async close(): Promise<void> {
@@ -182,6 +182,14 @@ export class WorkerSqlitePrepared<PS extends any[]> {
 		}
 
 		return this.db.queue(SqliteMessageType.PrepareRun, {id: this.id, params})
+	}
+
+	runMulti(multiParams: PS[]): Promise<any> {
+		if (this.deleted) {
+			throw new Error(`Prepared statement has been deleted!`)
+		}
+
+		return this.db.queue(SqliteMessageType.PrepareRunMulti, {id: this.id, multiParams})
 	}
 
 	delete() {

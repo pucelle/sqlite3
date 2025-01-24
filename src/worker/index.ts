@@ -32,7 +32,7 @@ function handleMessage({id, type, data}: SqliteMessage) {
 			break
 
 		case SqliteMessageType.Prepare:
-			preparedMap.set(data.id, db.prepare(data.sql))
+			preparedMap.set(id, db.prepare(data.sql))
 			break
 
 		case SqliteMessageType.PrepareAll:
@@ -56,12 +56,25 @@ function handleMessage({id, type, data}: SqliteMessage) {
 			}
 			break
 
+		case SqliteMessageType.PrepareRunMulti:
+			var prepared = preparedMap.get(data.id)
+			if (prepared) {
+				let runMulti = db.transaction((multiParams) => {
+					for (const params of multiParams) {
+						prepared!.run(params)
+					}
+				})
+
+				runMulti(data.multiParams)
+			}
+			break
+
 		case SqliteMessageType.PrepareDelete:
 			preparedMap.delete(data.id)
 			break
 
 		case SqliteMessageType.Exec:
-			db.exec(data)
+			db.exec(data.sql)
 			break
 
 		case SqliteMessageType.Close:
