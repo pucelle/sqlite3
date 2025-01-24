@@ -149,7 +149,7 @@ export class WorkerSqlite {
 }
 
 
-export class WorkerSqlitePrepared {
+export class WorkerSqlitePrepared<PS extends any[]> {
 
 	readonly id: number
 	readonly db: WorkerSqlite
@@ -160,7 +160,7 @@ export class WorkerSqlitePrepared {
 		this.db = db
 	}
 
-	all(...params: any[]): Promise<any> {
+	all(...params: PS): Promise<any> {
 		if (this.deleted) {
 			throw new Error(`Prepared statement has been deleted!`)
 		}
@@ -168,7 +168,7 @@ export class WorkerSqlitePrepared {
 		return this.db.queue(SqliteMessageType.PrepareAll, {id: this.id, params})
 	}
 
-	get(...params: any[]): Promise<any> {
+	get(...params: PS): Promise<any> {
 		if (this.deleted) {
 			throw new Error(`Prepared statement has been deleted!`)
 		}
@@ -176,7 +176,7 @@ export class WorkerSqlitePrepared {
 		return this.db.queue(SqliteMessageType.PrepareGet, {id: this.id, params})
 	}
 
-	run(...params: any[]): Promise<any> {
+	run(...params: PS): Promise<any> {
 		if (this.deleted) {
 			throw new Error(`Prepared statement has been deleted!`)
 		}
