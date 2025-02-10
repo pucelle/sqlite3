@@ -121,6 +121,10 @@ export class WorkerSqlite {
 		return this.queue(SqliteMessageType.Run, {sql, params})
 	}
 
+	runMulti(sql: string, multiParams: any[][]): Promise<any> {
+		return this.queue(SqliteMessageType.RunMulti, {sql, multiParams})
+	}
+
 	/** 
 	 * Note, must delete after not use it any more.
 	 * Or prepared statement can't be GC in worker.
@@ -182,14 +186,6 @@ export class WorkerSqlitePrepared<PS extends any[]> {
 		}
 
 		return this.db.queue(SqliteMessageType.PrepareRun, {id: this.id, params})
-	}
-
-	runMulti(multiParams: PS[]): Promise<any> {
-		if (this.deleted) {
-			throw new Error(`Prepared statement has been deleted!`)
-		}
-
-		return this.db.queue(SqliteMessageType.PrepareRunMulti, {id: this.id, multiParams})
 	}
 
 	delete() {

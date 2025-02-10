@@ -15,7 +15,7 @@ export enum SqliteMessageType {
 	PrepareAll,
 	PrepareGet,
 	PrepareRun,
-	PrepareRunMulti,
+	RunMulti,
 	PrepareDelete,
 	Close,
 }
