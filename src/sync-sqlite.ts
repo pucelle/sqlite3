@@ -22,15 +22,18 @@ export class SyncSqlite extends sqlite3 {
 		return this.prepare(sql).run(...params)
 	}
 
-	runMulti(sql: string, multiParams: any[][]) {
+	runMulti(sql: string, multiParams: any[][]): sqlite3.RunResult[]  {
 		let prepared = this.prepare(sql)
+		let results: sqlite3.RunResult[] = []
 
 		let runMulti = this.transaction((multiParams) => {
 			for (const params of multiParams) {
-				prepared!.run(params)
+				results.push(prepared!.run(params))
 			}
 		})
 
 		runMulti(multiParams)
+
+		return results
 	}
 }
